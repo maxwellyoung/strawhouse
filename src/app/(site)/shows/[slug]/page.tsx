@@ -1,6 +1,7 @@
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PortableText } from "@portabletext/react";
+import Image from "next/image";
 import { formatDateRange } from "@/lib/date";
 
 const SHOW_BY_SLUG = groq`*[_type=="show" && slug.current==$slug][0]{
@@ -18,14 +19,27 @@ const SHOW_BY_SLUG = groq`*[_type=="show" && slug.current==$slug][0]{
   year
 }`;
 
+type GalleryImage = { url: string; caption?: string };
+type LinkItem = { label?: string; url: string };
+type ShowDoc = {
+  title: string;
+  subtitle?: string;
+  artists?: string[];
+  start?: string;
+  end?: string;
+  press?: unknown;
+  gallery?: GalleryImage[];
+  links?: LinkItem[];
+};
+
 export default async function ShowPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   const data = await sanityFetch({ query: SHOW_BY_SLUG, params: { slug } });
-  const show = data?.data;
+  const show = (data?.data as ShowDoc) || null;
 
   if (!show) {
     return (
@@ -65,13 +79,16 @@ export default async function ShowPage({
       {Array.isArray(show.gallery) && show.gallery.length > 0 && (
         <section className="grid-12 gap-4 reveal">
           <div className="col-span-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {show.gallery.map((img: any, idx: number) => (
+            {show.gallery.map((img: GalleryImage, idx: number) => (
               <figure key={idx} className="space-y-2 reveal">
-                <img
-                  src={img.url}
-                  alt={img.caption || ""}
-                  className="w-full h-auto"
-                />
+                <div className="ratio relative">
+                  <Image
+                    src={img.url}
+                    alt={img.caption || ""}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  />
+                </div>
                 {img.caption && (
                   <figcaption className="nav-sans text-xs text-muted">
                     {img.caption}
@@ -85,7 +102,7 @@ export default async function ShowPage({
 
       {Array.isArray(show.links) && show.links.length > 0 && (
         <section className="space-x-4">
-          {show.links.map((l: any, idx: number) => (
+          {show.links.map((l: LinkItem, idx: number) => (
             <a
               key={idx}
               href={l.url}

@@ -8,40 +8,56 @@ const SITE_SINGLETON = groq`*[_type=="site"][0]{
 
 export default async function AboutPage() {
   const data = await sanityFetch({ query: SITE_SINGLETON });
-  const site = data?.data;
+  const site = data?.data as
+    | {
+        aboutBlurb?: unknown;
+        address?: string;
+        hours?: string;
+        email?: string;
+        instagram?: string;
+      }
+    | undefined;
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-16 space-y-8">
-      <h1 className="text-2xl font-semibold">About</h1>
+    <main className="wrap py-12 sm:py-16 space-y-8">
+      <header className="grid-12">
+        <div className="col-span-12 md:col-span-3">
+          <h1 className="text-2xl font-semibold">About</h1>
+        </div>
+      </header>
 
       {site?.aboutBlurb && (
-        <section className="prose max-w-none">
-          <PortableText value={site.aboutBlurb} />
+        <section className="grid-12 reveal">
+          <div className="col-span-12 md:col-span-9 prose max-w-none prose-p:leading-relaxed prose-p:my-3">
+            <PortableText value={site.aboutBlurb} />
+          </div>
         </section>
       )}
 
-      <section className="space-y-1 text-sm text-gray-700">
-        {site?.address && <p>{site.address}</p>}
-        {site?.hours && <p>{site.hours}</p>}
-        {site?.email && (
-          <p>
-            <a className="underline" href={`mailto:${site.email}`}>
-              {site.email}
-            </a>
-          </p>
-        )}
-        {site?.instagram && (
-          <p>
-            <a
-              className="underline"
-              href={site.instagram}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Instagram
-            </a>
-          </p>
-        )}
+      <section className="grid-12">
+        <div className="col-span-12 md:col-span-9 space-y-1 text-sm text-secondary">
+          {site?.address && <p>{site.address}</p>}
+          {site?.hours && <p>{site.hours}</p>}
+          {site?.email && (
+            <p>
+              <a className="underline" href={`mailto:${site.email}`}>
+                {site.email}
+              </a>
+            </p>
+          )}
+          {site?.instagram && (
+            <p>
+              <a
+                className="underline"
+                href={site.instagram}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Instagram
+              </a>
+            </p>
+          )}
+        </div>
       </section>
     </main>
   );
