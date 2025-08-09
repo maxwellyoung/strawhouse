@@ -1,5 +1,6 @@
 import createImageUrlBuilder from "@sanity/image-url";
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import type { ImageLoader } from "next/image";
 
 import { dataset, projectId } from "../env";
 
@@ -15,3 +16,10 @@ export function buildResponsiveSrc(
   const srcset = widths.map((w) => `${src}?w=${w} ${w}w`).join(", ");
   return { src, srcSet: srcset };
 }
+
+export const sanityImageLoader: ImageLoader = ({ src, width, quality }) => {
+  const q = quality ?? 75;
+  const hasQuery = src.includes("?");
+  const sep = hasQuery ? "&" : "?";
+  return `${src}${sep}w=${width}&q=${q}&auto=format`;
+};

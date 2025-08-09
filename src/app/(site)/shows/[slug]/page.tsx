@@ -2,7 +2,7 @@ import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
-import { buildResponsiveSrc } from "@/sanity/lib/image";
+import { sanityImageLoader } from "@/sanity/lib/image";
 import { formatDateRange } from "@/lib/date";
 
 const SHOW_BY_SLUG = groq`*[_type=="show" && slug.current==$slug][0]{
@@ -84,6 +84,7 @@ export default async function ShowPage({
               <figure key={idx} className="space-y-2 reveal">
                 <div className="ratio relative">
                   <Image
+                    loader={sanityImageLoader}
                     src={img.url}
                     alt={img.caption || ""}
                     fill
