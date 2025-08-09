@@ -48,15 +48,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://v1.sanity.network" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
-        <link rel="dns-prefetch" href="https://v1.sanity.network" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${generalSans.variable} ${sentient.variable} antialiased min-h-screen`}
       >
+        <link
+          rel="preconnect"
+          href="https://cdn.sanity.io"
+          crossOrigin="anonymous"
+        />
         <ScrollReveal />
         {children}
       </body>

@@ -5,7 +5,11 @@ import { formatDate } from "@/lib/date";
 import CursorPreview from "@/app/_components/CursorPreview";
 
 const HOME_SHOWS = groq`*[_type=="show"]|order(coalesce(end, start) desc){
-  _id, title, start, hero{asset->{url}}, "slug": slug.current
+  _id,
+  title,
+  start,
+  "slug": slug.current,
+  "previewUrl": coalesce(hero.asset->url, gallery[0].asset->url)
 }`;
 
 export default async function HomeIndex() {
@@ -15,7 +19,7 @@ export default async function HomeIndex() {
     title: string;
     start?: string;
     slug?: string;
-    hero?: { asset?: { url?: string } } | null;
+    previewUrl?: string;
   }> = data?.data ?? [];
 
   return (
@@ -32,7 +36,7 @@ export default async function HomeIndex() {
                   <Link
                     href={`/shows/${show.slug}`}
                     prefetch={false}
-                    data-preview={show.hero?.asset?.url || ""}
+                    data-preview={show.previewUrl || ""}
                     className="grid grid-cols-[7.5rem_1fr] gap-4 items-baseline py-3 -mx-2 px-2 rounded focus-visible:outline-1 focus-visible:outline-black/40 hover:bg-black/[0.02]"
                   >
                     <span className="nav-sans text-xs text-muted">

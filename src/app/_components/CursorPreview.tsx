@@ -19,6 +19,7 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
     x: -9999,
     y: -9999,
   });
+  const halfSizeRef = React.useRef<{ w: number; h: number }>({ w: 0, h: 0 });
   const rafIdRef = React.useRef<number | null>(null);
   const currentElRef = React.useRef<HTMLElement | null>(null);
 
@@ -30,9 +31,9 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
     const tick = () => {
       const img = imgRef.current;
       if (!img) return;
-      const offset = 18;
       const { x, y } = lastPosRef.current;
-      img.style.transform = `translate(${x + offset}px, ${y + offset}px)`;
+      const { w, h } = halfSizeRef.current;
+      img.style.transform = `translate(${x - w}px, ${y - h}px)`;
       rafIdRef.current = requestAnimationFrame(tick);
     };
 
@@ -71,7 +72,19 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
       const src = url.includes("?")
         ? `${url}&w=640&q=70&auto=format&dpr=${dpr}`
         : `${url}?w=640&q=70&auto=format&dpr=${dpr}`;
-      if (imgRef.current.src !== src) imgRef.current.src = src;
+      if (imgRef.current.src !== src) {
+        imgRef.current.src = src;
+      }
+      // Measure once loaded
+      const onLoad = () => {
+        const img = imgRef.current;
+        if (!img) return;
+        halfSizeRef.current = {
+          w: img.offsetWidth / 2,
+          h: img.offsetHeight / 2,
+        };
+      };
+      imgRef.current.addEventListener("load", onLoad, { once: true });
       currentElRef.current = el;
       setVisible(true);
       maybeStartRaf();
@@ -135,7 +148,7 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
         ref={imgRef}
         alt=""
         aria-hidden
-        className={`pointer-events-none fixed z-40 h-40 w-auto rounded-sm shadow-sm transition-opacity duration-150 ${
+        className={`pointer-events-none fixed z-40 h-44 w-auto rounded-md shadow-lg transition-opacity duration-50 ${
           visible ? "opacity-100" : "opacity-0"
         }`}
         decoding="async"

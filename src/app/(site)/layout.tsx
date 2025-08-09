@@ -59,7 +59,7 @@ export default async function SiteLayout({
                 href={`https://maps.google.com/?q=${encodeURIComponent(site.address)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="underline"
+                className="hover:underline underline-offset-2"
                 aria-label={`Open map for ${site.address}`}
               >
                 {site.address}
@@ -69,7 +69,10 @@ export default async function SiteLayout({
           <div className="col-span-12 md:col-span-3">{site?.hours}</div>
           <div className="col-span-12 md:col-span-3">
             {site?.email && (
-              <a className="underline" href={`mailto:${site.email}`}>
+              <a
+                className="hover:underline underline-offset-2"
+                href={`mailto:${site.email}`}
+              >
                 {site.email}
               </a>
             )}
@@ -77,7 +80,7 @@ export default async function SiteLayout({
           <div className="col-span-12 md:col-span-3">
             {site?.instagram && (
               <a
-                className="underline"
+                className="hover:underline underline-offset-2"
                 href={site.instagram}
                 target="_blank"
                 rel="noreferrer"

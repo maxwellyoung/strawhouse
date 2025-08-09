@@ -4,7 +4,9 @@ import { client } from "@/sanity/lib/client";
 import { PortableText } from "@portabletext/react";
 import type { TypedObject } from "sanity";
 import Image from "next/image";
+import { sizesForHero, sanityImageLoader } from "@/sanity/lib/image";
 import { formatDateRange } from "@/lib/date";
+import GalleryGrid from "@/app/_components/GalleryGrid";
 
 const SHOW_BY_SLUG = groq`*[_type=="show" && slug.current==$slug][0]{
   _id,
@@ -15,14 +17,16 @@ const SHOW_BY_SLUG = groq`*[_type=="show" && slug.current==$slug][0]{
   end,
   press,
   hero,
-  gallery[]{..., "url": asset->url},
+  "heroUrl": hero.asset->url,
+  "heroLqip": hero.asset->metadata.lqip,
+  gallery[]{..., "url": asset->url, "lqip": asset->metadata.lqip},
   links,
   pressPdf{asset->{url, originalFilename}},
   "slug": slug.current,
   year
 }`;
 
-type GalleryImage = { url: string; caption?: string };
+type GalleryImage = { url: string; lqip?: string; caption?: string };
 type LinkItem = { label?: string; url: string };
 type ShowDoc = {
   title: string;
@@ -31,6 +35,8 @@ type ShowDoc = {
   start?: string;
   end?: string;
   press?: TypedObject[] | null;
+  heroUrl?: string;
+  heroLqip?: string;
   gallery?: GalleryImage[];
   links?: LinkItem[];
   pressPdf?: { asset?: { url?: string; originalFilename?: string } };
@@ -56,6 +62,26 @@ export default async function ShowPage({
 
   return (
     <main className="wrap py-12 sm:py-16 space-y-8">
+      {show.heroUrl && (
+        <section className="grid-12 reveal">
+          <div className="col-span-12">
+            <figure className="space-y-2">
+              <div className="ratio relative">
+                <Image
+                  loader={sanityImageLoader}
+                  src={show.heroUrl}
+                  alt={show.title}
+                  fill
+                  sizes={sizesForHero()}
+                  priority
+                  placeholder={show.heroLqip ? "blur" : undefined}
+                  blurDataURL={show.heroLqip || undefined}
+                />
+              </div>
+            </figure>
+          </div>
+        </section>
+      )}
       <header className="grid-12">
         <div className="col-span-12 md:col-span-3">
           <h1 className="text-2xl font-semibold">{show.title}</h1>
@@ -83,24 +109,8 @@ export default async function ShowPage({
 
       {Array.isArray(show.gallery) && show.gallery.length > 0 && (
         <section className="grid-12 gap-4 reveal">
-          <div className="col-span-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 content-visibility-auto">
-            {show.gallery.map((img: GalleryImage) => (
-              <figure key={img.url} className="space-y-2 reveal">
-                <div className="ratio relative">
-                  <Image
-                    src={img.url}
-                    alt={img.caption || ""}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  />
-                </div>
-                {img.caption && (
-                  <figcaption className="nav-sans text-xs text-muted">
-                    {img.caption}
-                  </figcaption>
-                )}
-              </figure>
-            ))}
+          <div className="col-span-12">
+            <GalleryGrid images={show.gallery} />
           </div>
         </section>
       )}

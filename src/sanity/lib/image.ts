@@ -21,12 +21,9 @@ export const sanityImageLoader: ImageLoader = ({ src, width, quality }) => {
   const q = quality ?? 75;
   const hasQuery = src.includes("?");
   const sep = hasQuery ? "&" : "?";
-  // Include DPR for sharper results on high-density screens, capped at 2x.
-  const dpr =
-    typeof window !== "undefined"
-      ? Math.min(2, Math.max(1, window.devicePixelRatio || 1))
-      : 1;
-  return `${src}${sep}w=${width}&q=${q}&auto=format&dpr=${Math.round(dpr)}`;
+  // Deterministic URL for SSR/CSR parity to avoid hydration mismatches.
+  // Next.js will emit srcset for multiple widths, so no explicit dpr param.
+  return `${src}${sep}w=${width}&q=${q}&auto=format`;
 };
 
 // Common sizes helpers for consistent responsive images
