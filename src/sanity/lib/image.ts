@@ -21,5 +21,19 @@ export const sanityImageLoader: ImageLoader = ({ src, width, quality }) => {
   const q = quality ?? 75;
   const hasQuery = src.includes("?");
   const sep = hasQuery ? "&" : "?";
-  return `${src}${sep}w=${width}&q=${q}&auto=format`;
+  // Include DPR for sharper results on high-density screens, capped at 2x.
+  const dpr =
+    typeof window !== "undefined"
+      ? Math.min(2, Math.max(1, window.devicePixelRatio || 1))
+      : 1;
+  return `${src}${sep}w=${width}&q=${q}&auto=format&dpr=${Math.round(dpr)}`;
 };
+
+// Common sizes helpers for consistent responsive images
+export function sizesForGrid(): string {
+  return "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw";
+}
+
+export function sizesForHero(): string {
+  return "(min-width: 1024px) 1024px, 100vw";
+}

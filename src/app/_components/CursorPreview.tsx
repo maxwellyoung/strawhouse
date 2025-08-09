@@ -64,9 +64,13 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
     const showPreviewFor = (el: HTMLElement) => {
       const url = el.getAttribute("data-preview");
       if (!url || !imgRef.current) return;
+      const dpr = Math.min(
+        2,
+        Math.max(1, Math.round(window.devicePixelRatio || 1)),
+      );
       const src = url.includes("?")
-        ? `${url}&w=640&q=70&auto=format`
-        : `${url}?w=640&q=70&auto=format`;
+        ? `${url}&w=640&q=70&auto=format&dpr=${dpr}`
+        : `${url}?w=640&q=70&auto=format&dpr=${dpr}`;
       if (imgRef.current.src !== src) imgRef.current.src = src;
       currentElRef.current = el;
       setVisible(true);
