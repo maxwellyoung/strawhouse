@@ -42,7 +42,8 @@ export default async function ShowPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const resolved = await params;
+  const slug = (resolved as { slug: string }).slug;
   const data = await sanityFetch({ query: SHOW_BY_SLUG, params: { slug } });
   const show = (data?.data as ShowDoc) || null;
 
@@ -84,8 +85,8 @@ export default async function ShowPage({
       {Array.isArray(show.gallery) && show.gallery.length > 0 && (
         <section className="grid-12 gap-4 reveal">
           <div className="col-span-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {show.gallery.map((img: GalleryImage, idx: number) => (
-              <figure key={idx} className="space-y-2 reveal">
+            {show.gallery.map((img: GalleryImage) => (
+              <figure key={img.url} className="space-y-2 reveal">
                 <div className="ratio relative">
                   <Image
                     loader={sanityImageLoader}
@@ -108,9 +109,9 @@ export default async function ShowPage({
 
       {Array.isArray(show.links) && show.links.length > 0 && (
         <section className="space-x-4">
-          {show.links.map((l: LinkItem, idx: number) => (
+          {show.links.map((l: LinkItem) => (
             <a
-              key={idx}
+              key={l.url}
               href={l.url}
               className="underline"
               target="_blank"
