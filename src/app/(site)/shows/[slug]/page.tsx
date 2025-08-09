@@ -1,6 +1,7 @@
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PortableText } from "@portabletext/react";
+import type { TypedObject } from "sanity";
 import Image from "next/image";
 import { sanityImageLoader } from "@/sanity/lib/image";
 import { formatDateRange } from "@/lib/date";
@@ -29,7 +30,7 @@ type ShowDoc = {
   artists?: string[];
   start?: string;
   end?: string;
-  press?: unknown;
+  press?: TypedObject[] | null;
   gallery?: GalleryImage[];
   links?: LinkItem[];
   pressPdf?: { asset?: { url?: string; originalFilename?: string } };
@@ -71,7 +72,7 @@ export default async function ShowPage({
         </div>
       </header>
 
-      {show.press && (
+      {Array.isArray(show.press) && show.press.length > 0 && (
         <section className="grid-12 reveal">
           <div className="col-span-12 md:col-span-9 prose max-w-none prose-p:leading-relaxed prose-p:my-3">
             <PortableText value={show.press} />
