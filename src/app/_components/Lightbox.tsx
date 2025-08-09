@@ -124,7 +124,7 @@ export default function Lightbox({
   // Pointer pan and swipe-to-navigate
   const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
     // Ignore controls (close/prev/next)
-    if ((e.target as HTMLElement)?.closest('[data-lb-control]')) return;
+    if ((e.target as HTMLElement)?.closest("[data-lb-control]")) return;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     lastPointRef.current = { x: e.clientX, y: e.clientY };
     panningRef.current = scale > 1; // pan when zoomed; otherwise treat as swipe
@@ -155,7 +155,7 @@ export default function Lightbox({
   };
 
   const onDoubleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
-    if ((e.target as HTMLElement)?.closest('[data-lb-control]')) return;
+    if ((e.target as HTMLElement)?.closest("[data-lb-control]")) return;
     const stage = stageRef.current;
     if (!stage) return;
     const rect = stage.getBoundingClientRect();
