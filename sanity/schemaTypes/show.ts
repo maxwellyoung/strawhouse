@@ -65,8 +65,12 @@ export default defineType({
       name: "year",
       type: "number",
       readOnly: true,
-      initialValue: ({ parent }) =>
-        parent?.start ? Number(String(parent.start).slice(0, 4)) : undefined,
+      initialValue: ({ parent }) => {
+        const src = parent?.start
+          ? String(parent.start)
+          : new Date().toISOString();
+        return Number(src.slice(0, 4));
+      },
     }),
   ],
 });

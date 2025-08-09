@@ -1,4 +1,5 @@
 import { createClient } from "@sanity/client";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -60,10 +61,12 @@ async function seed() {
     aboutBlurb: [
       {
         _type: "block",
+        _key: randomUUID(),
         style: "normal",
         children: [
           {
             _type: "span",
+            _key: randomUUID(),
             text: "Strawhouse is an artist-run gallery in Mt Eden, Auckland.",
           },
         ],
@@ -90,13 +93,21 @@ async function seed() {
       press: [
         {
           _type: "block",
+          _key: randomUUID(),
           style: "normal",
-          children: [{ _type: "span", text: "Press text for Soft Weather." }],
+          children: [
+            {
+              _type: "span",
+              _key: randomUUID(),
+              text: "Press text for Soft Weather.",
+            },
+          ],
         },
       ],
       links: [
         {
           _type: "object",
+          _key: randomUUID(),
           label: "Instagram",
           url: "https://instagram.com/strawhouse4",
         },
@@ -114,8 +125,15 @@ async function seed() {
       press: [
         {
           _type: "block",
+          _key: randomUUID(),
           style: "normal",
-          children: [{ _type: "span", text: "Press text for Afterlight." }],
+          children: [
+            {
+              _type: "span",
+              _key: randomUUID(),
+              text: "Press text for Afterlight.",
+            },
+          ],
         },
       ],
       slug: { _type: "slug", current: "afterlight" },
@@ -126,7 +144,24 @@ async function seed() {
   const tx = client.transaction();
   for (const doc of shows) {
     const id = `seed-show-${doc.slug.current}`;
-    tx.createOrReplace({ _id: id, ...doc });
+    // ensure keys for arrays that Sanity expects keys on
+    const withKeys = {
+      ...doc,
+      gallery: (doc.gallery || []).map((img) => ({
+        _key: randomUUID(),
+        ...img,
+      })),
+      links: (doc.links || []).map((l) => ({ _key: randomUUID(), ...l })),
+      press: (doc.press || []).map((b) => ({
+        ...b,
+        _key: b._key || randomUUID(),
+        children: (b.children || []).map((c) => ({
+          ...c,
+          _key: c._key || randomUUID(),
+        })),
+      })),
+    };
+    tx.createOrReplace({ _id: id, ...withKeys });
   }
   await tx.commit();
 
