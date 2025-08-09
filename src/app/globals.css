@@ -1,28 +1,6 @@
 @import "tailwindcss";
 
-/* Local variable serif font */
-@font-face {
-  font-family: "Sentient Var";
-  src:
-    url("/fonts/Sentient-Variable.woff2") format("woff2"),
-    url("/fonts/Sentient-Variable.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Local variable sans font */
-@font-face {
-  font-family: "General Sans Var";
-  src:
-    local("GeneralSans-Variable"),
-    local("General Sans Variable"),
-    url("/fonts/GeneralSans-Variable.woff2") format("woff2"),
-    url("/fonts/GeneralSans-Variable.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* Next.js next/font handles @font-face for local fonts; duplicate declarations removed */
 
 :root {
   --background: #ffffff;

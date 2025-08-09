@@ -1,5 +1,10 @@
-import { redirect } from "next/navigation";
+import SiteLayout from "./(site)/layout";
+import HomeIndex from "./(site)/page";
 
-export default function Home() {
-  redirect("/archive");
+export default async function HomePage() {
+  return (
+    <SiteLayout>
+      <HomeIndex />
+    </SiteLayout>
+  );
 }

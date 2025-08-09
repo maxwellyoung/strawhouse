@@ -1,5 +1,6 @@
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
+import { client } from "@/sanity/lib/client";
 import { PortableText } from "@portabletext/react";
 import type { TypedObject } from "sanity";
 import Image from "next/image";
@@ -113,7 +114,7 @@ export default async function ShowPage({
               href={l.url}
               className="underline"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               {l.label || l.url}
             </a>
@@ -123,7 +124,7 @@ export default async function ShowPage({
               href={show.pressPdf.asset.url}
               className="underline"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               Press PDF
             </a>
@@ -132,4 +133,13 @@ export default async function ShowPage({
       )}
     </main>
   );
+}
+
+export const revalidate = 300;
+
+const ALL_SHOW_SLUGS = groq`*[_type=="show" && defined(slug.current)][].slug.current`;
+
+export async function generateStaticParams() {
+  const slugs: string[] = (await client.fetch(ALL_SHOW_SLUGS)) || [];
+  return slugs.map((slug) => ({ slug }));
 }

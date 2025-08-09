@@ -3,24 +3,54 @@ import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { formatDate } from "@/lib/date";
 
-const SHOW_LIST = groq`*[_type=="show"]|order(start desc){
-  _id, title, start, "slug": slug.current
+const SHOW_LIST = groq`*[_type=="show"]|order(coalesce(end, start) desc){
+  _id, title, start, end, "slug": slug.current
 }`;
 
 export default async function ArchivePage() {
-  const data = await sanityFetch({ query: SHOW_LIST });
-  const shows: Array<{
+  const data = await sanityFetch({ query: SHOW_LIST, tags: ["show"] });
+  type ShowListItem = {
     _id: string;
     title: string;
     start?: string;
+    end?: string;
     slug?: string;
-  }> = data?.data ?? [];
+  };
+  const shows: ShowListItem[] = data?.data ?? [];
 
-  const groups = new Map<string, typeof shows>();
-  for (const s of shows) {
+  const todayStart = new Date();
+  const startOfToday = new Date(
+    todayStart.getFullYear(),
+    todayStart.getMonth(),
+    todayStart.getDate(),
+  ).getTime();
+
+  const isUpcoming = (s: ShowListItem) => {
+    const ref = s.end || s.start;
+    if (!ref) return false;
+    const refDate = new Date(ref).getTime();
+    return refDate >= startOfToday;
+  };
+
+  const upcoming = shows
+    .filter(isUpcoming)
+    .sort(
+      (a, b) =>
+        new Date(a.start || 0).getTime() - new Date(b.start || 0).getTime(),
+    );
+
+  const past = shows.filter((s) => !isUpcoming(s));
+  const pastGroups = new Map<string, ShowListItem[]>();
+  for (const s of past) {
     const year = s.start?.slice(0, 4) ?? "Unknown";
-    if (!groups.has(year)) groups.set(year, []);
-    groups.get(year)!.push(s);
+    if (!pastGroups.has(year)) pastGroups.set(year, []);
+    pastGroups.get(year)!.push(s);
+  }
+  for (const arr of pastGroups.values()) {
+    arr.sort(
+      (a, b) =>
+        new Date(b.start || 0).getTime() - new Date(a.start || 0).getTime(),
+    );
   }
 
   return (
@@ -29,31 +59,56 @@ export default async function ArchivePage() {
         <h1 className="col-span-12 md:col-span-3 text-2xl font-semibold tracking-tight">
           Shows
         </h1>
-        <div className="col-span-12 md:col-span-9 space-y-6">
-          {[...groups.entries()]
+        <div className="col-span-12 md:col-span-9 space-y-10">
+          <section id="upcoming" className="reveal space-y-3 pt-2">
+            <h2 className="nav-sans text-sm text-secondary uppercase tracking-wide">
+              {`Upcoming${upcoming.length ? ` (${upcoming.length})` : ""}`}
+            </h2>
+            {upcoming.length === 0 ? (
+              <p className="nav-sans text-sm text-muted">No upcoming shows.</p>
+            ) : (
+              <ul className="space-y-1">
+                {upcoming.map((show) => (
+                  <li key={show._id} className="reveal">
+                    <Link
+                      href={`/shows/${show.slug}`}
+                      prefetch={false}
+                      className="grid grid-cols-[7.5rem_1fr] gap-4 items-baseline py-3 -mx-2 px-2 rounded focus-visible:outline-1 focus-visible:outline-black/40 hover:bg-black/[0.02]"
+                    >
+                      <span className="nav-sans text-xs text-secondary">
+                        {formatDate(show.start)}
+                      </span>
+                      <span className="text-lg tracking-tight">
+                        {show.title}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {[...pastGroups.entries()]
             .sort((a, b) => b[0].localeCompare(a[0]))
             .map(([year, items]) => (
-              <section
-                key={year}
-                className="reveal space-y-3 pt-8 border-t rule"
-              >
+              <section key={year} className="reveal space-y-3 pt-2">
                 <h2 className="nav-sans text-sm text-secondary uppercase tracking-wide">
                   {year}
                 </h2>
                 <ul className="space-y-1">
                   {items.map((show) => (
-                    <li
-                      key={show._id}
-                      className="grid grid-cols-[7.5rem_1fr] gap-4 reveal"
-                    >
-                      <span className="nav-sans text-xs text-muted">
-                        {formatDate(show.start)}
-                      </span>
+                    <li key={show._id} className="reveal">
                       <Link
                         href={`/shows/${show.slug}`}
-                        className="link-underline underline-offset-2"
+                        prefetch={false}
+                        className="grid grid-cols-[7.5rem_1fr] gap-4 items-baseline py-3 -mx-2 px-2 rounded focus-visible:outline-1 focus-visible:outline-black/40 hover:bg-black/[0.02]"
                       >
-                        {show.title}
+                        <span className="nav-sans text-xs text-muted">
+                          {formatDate(show.start)}
+                        </span>
+                        <span className="text-lg tracking-tight">
+                          {show.title}
+                        </span>
                       </Link>
                     </li>
                   ))}

@@ -16,7 +16,7 @@ interface SiteDoc {
 }
 
 export default async function AboutPage() {
-  const data = await sanityFetch({ query: SITE_SINGLETON });
+  const data = await sanityFetch({ query: SITE_SINGLETON, tags: ["site"] });
   const site = (data?.data as SiteDoc) || undefined;
   const blurb = (site?.aboutBlurb ?? []) as TypedObject[];
 
@@ -53,7 +53,7 @@ export default async function AboutPage() {
                 className="underline"
                 href={site.instagram}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 Instagram
               </a>
