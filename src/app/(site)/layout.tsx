@@ -23,7 +23,7 @@ export default async function SiteLayout({
     | undefined;
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <SanityLive />
       <header className="px-4 py-4 sm:py-6 border-b border-black/10">
         <nav className="nav-sans wrap grid-12 items-center">
@@ -68,6 +68,6 @@ export default async function SiteLayout({
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

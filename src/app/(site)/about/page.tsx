@@ -1,23 +1,24 @@
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PortableText } from "@portabletext/react";
-import type { PortableTextBlock } from "@portabletext/types";
+import type { TypedObject } from "sanity";
 
 const SITE_SINGLETON = groq`*[_type=="site"][0]{
   aboutBlurb, address, hours, email, instagram
 }`;
 
-type SiteDoc = {
-  aboutBlurb?: PortableTextBlock[];
+interface SiteDoc {
+  aboutBlurb?: TypedObject[] | null;
   address?: string;
   hours?: string;
   email?: string;
   instagram?: string;
-};
+}
 
 export default async function AboutPage() {
   const data = await sanityFetch({ query: SITE_SINGLETON });
   const site = (data?.data as SiteDoc) || undefined;
+  const blurb = (site?.aboutBlurb ?? []) as TypedObject[];
 
   return (
     <main className="wrap py-12 sm:py-16 space-y-8">
@@ -27,10 +28,10 @@ export default async function AboutPage() {
         </div>
       </header>
 
-      {Array.isArray(site?.aboutBlurb) && site.aboutBlurb.length > 0 && (
+      {Array.isArray(blurb) && blurb.length > 0 && (
         <section className="grid-12 reveal">
           <div className="col-span-12 md:col-span-9 prose max-w-none prose-p:leading-relaxed prose-p:my-3">
-            <PortableText value={site.aboutBlurb as PortableTextBlock[]} />
+            <PortableText value={blurb} />
           </div>
         </section>
       )}
