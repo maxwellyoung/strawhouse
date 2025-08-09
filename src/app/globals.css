@@ -1,8 +1,39 @@
 @import "tailwindcss";
 
+/* Local variable serif font */
+@font-face {
+  font-family: "Sentient Var";
+  src:
+    url("/fonts/Sentient-Variable.woff2") format("woff2"),
+    url("/fonts/Sentient-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Local variable sans font */
+@font-face {
+  font-family: "General Sans Var";
+  src:
+    local("GeneralSans-Variable"),
+    local("General Sans Variable"),
+    url("/fonts/GeneralSans-Variable.woff2") format("woff2"),
+    url("/fonts/GeneralSans-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
+  --text: #000000;
+  --text-secondary: #333333;
+  --text-muted: #6b6b6b;
+  --font-serif:
+    var(--font-sentient), ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
+  --grid-gutter: 16px;
 }
 
 @theme inline {
@@ -10,17 +41,142 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Keep light theme colors even in dark mode */
+    --background: #ffffff;
+    --foreground: #000000;
   }
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive grid gutter */
+@media (min-width: 640px) {
+  :root {
+    --grid-gutter: 24px;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --grid-gutter: 32px;
+  }
+}
+
+/* Brockmann-inspired utilities */
+.wrap {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .wrap {
+    padding-inline: 1.5rem;
+  }
+}
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+}
+.rule {
+  border-color: color-mix(in oklab, var(--text) 12%, transparent);
+}
+
+/* Subtle transitions for links and images */
+a {
+  transition:
+    color 150ms ease,
+    opacity 150ms ease;
+}
+a:hover {
+  opacity: 0.85;
+}
+img {
+  transition: transform 250ms ease;
+}
+figure:hover img {
+  transform: scale(1.01);
+}
+
+/* Minimal prose defaults for PortableText */
+.prose p {
+  margin: 0.75rem 0;
+  line-height: 1.7;
+}
+.prose a {
+  text-decoration: underline;
+}
+.prose h1,
+.prose h2,
+.prose h3 {
+  margin: 1.25rem 0 0.75rem;
+}
+
+/* Nav stays sans for clarity */
+.nav-sans {
+  font-family:
+    var(--font-general-sans),
+    var(--font-sans),
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    Noto Sans,
+    sans-serif !important;
+  font-variation-settings: "wght" 500;
+}
+
+/* Animated underline for nav links */
+.nav-sans a {
+  position: relative;
+  text-underline-offset: 3px;
+}
+.nav-sans a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 0%;
+  background: currentColor;
+  transition: width 180ms ease;
+}
+.nav-sans a:hover::after {
+  width: 100%;
+}
+
+/* Scroll reveal: do not hide content by default to avoid back/forward cache issues */
+.reveal {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 400ms ease,
+    transform 400ms ease;
+}
+.reveal:not(.reveal-in) {
+  opacity: 0.999; /* visually identical but avoids flash */
+}
+.reveal.reveal-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Text color utilities using CSS vars */
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-muted {
+  color: var(--text-muted);
 }
