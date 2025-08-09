@@ -9,7 +9,7 @@ export default function ConsoleFilter() {
     console.error = (...args: unknown[]) => {
       const first = typeof args[0] === "string" ? args[0] : "";
       if (first.includes("disableTransition prop")) return;
-      origError(...args as Parameters<typeof console.error>);
+      origError(...(args as Parameters<typeof console.error>));
     };
     return () => {
       console.error = origError;
@@ -17,5 +17,3 @@ export default function ConsoleFilter() {
   }, []);
   return null;
 }
-
-

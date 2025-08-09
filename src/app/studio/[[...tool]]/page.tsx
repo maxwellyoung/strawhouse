@@ -10,9 +10,15 @@
 
 import { Studio } from "sanity";
 import config from "../../../../sanity/sanity.config";
+import ConsoleFilter from "./ConsoleFilter";
 
 export const dynamic = "force-static";
 
 export default function StudioPage() {
-  return <Studio config={config} />;
+  return (
+    <>
+      <ConsoleFilter />
+      <Studio config={config} />
+    </>
+  );
 }
