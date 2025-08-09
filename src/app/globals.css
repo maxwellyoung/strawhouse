@@ -87,6 +87,22 @@ figure:hover img {
   transform: scale(1.01);
 }
 
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Content-visibility utility for large grids/lists */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 300px; /* avoids layout jank when skipped */
+}
+
 /* Minimal prose defaults for PortableText */
 .prose p {
   margin: calc(var(--baseline) * 1) 0;

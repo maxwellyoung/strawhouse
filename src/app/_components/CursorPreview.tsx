@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import React from "react";
 
@@ -14,7 +15,10 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const imgRef = React.useRef<HTMLImageElement | null>(null);
   const [visible, setVisible] = React.useState(false);
-  const lastPosRef = React.useRef<{ x: number; y: number }>({ x: -9999, y: -9999 });
+  const lastPosRef = React.useRef<{ x: number; y: number }>({
+    x: -9999,
+    y: -9999,
+  });
   const rafIdRef = React.useRef<number | null>(null);
   const currentElRef = React.useRef<HTMLElement | null>(null);
 
@@ -50,7 +54,9 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
     };
 
     // Event delegation to reduce per-element listeners
-    const resolvePreviewEl = (target: EventTarget | null): HTMLElement | null => {
+    const resolvePreviewEl = (
+      target: EventTarget | null,
+    ): HTMLElement | null => {
       if (!(target instanceof HTMLElement)) return null;
       return target.closest<HTMLElement>("[data-preview]");
     };
@@ -95,9 +101,15 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
       if (!related || !fromEl.contains(related)) hidePreview();
     };
 
-    container.addEventListener("mousemove", onPointerMove);
-    container.addEventListener("mouseover", onMouseOver, true);
-    container.addEventListener("mouseout", onMouseOut, true);
+    container.addEventListener("mousemove", onPointerMove, { passive: true });
+    container.addEventListener("mouseover", onMouseOver, {
+      capture: true,
+      passive: true,
+    });
+    container.addEventListener("mouseout", onMouseOut, {
+      capture: true,
+      passive: true,
+    });
     container.addEventListener("focusin", onFocusIn);
     container.addEventListener("focusout", onFocusOut);
 
@@ -123,7 +135,11 @@ export default function CursorPreview({ children }: CursorPreviewProps) {
           visible ? "opacity-100" : "opacity-0"
         }`}
         decoding="async"
-        style={{ transform: "translate(-9999px, -9999px)", willChange: "transform" }}
+        loading="lazy"
+        style={{
+          transform: "translate(-9999px, -9999px)",
+          willChange: "transform",
+        }}
       />
     </div>
   );

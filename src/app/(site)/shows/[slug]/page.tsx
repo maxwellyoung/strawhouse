@@ -84,7 +84,7 @@ export default async function ShowPage({
 
       {Array.isArray(show.gallery) && show.gallery.length > 0 && (
         <section className="grid-12 gap-4 reveal">
-          <div className="col-span-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="col-span-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 content-visibility-auto">
             {show.gallery.map((img: GalleryImage) => (
               <figure key={img.url} className="space-y-2 reveal">
                 <div className="ratio relative">
