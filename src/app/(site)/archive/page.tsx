@@ -16,7 +16,6 @@ export default async function ArchivePage() {
     slug?: string;
   }> = data?.data ?? [];
 
-  // Formatter replaced by shared util, but keep for potential future grouping tweaks
   const groups = new Map<string, typeof shows>();
   for (const s of shows) {
     const year = s.start?.slice(0, 4) ?? "Unknown";
