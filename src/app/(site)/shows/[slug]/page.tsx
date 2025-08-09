@@ -16,6 +16,7 @@ const SHOW_BY_SLUG = groq`*[_type=="show" && slug.current==$slug][0]{
   hero,
   gallery[]{..., "url": asset->url},
   links,
+  pressPdf{asset->{url, originalFilename}},
   "slug": slug.current,
   year
 }`;
@@ -31,6 +32,7 @@ type ShowDoc = {
   press?: unknown;
   gallery?: GalleryImage[];
   links?: LinkItem[];
+  pressPdf?: { asset?: { url?: string; originalFilename?: string } };
 };
 
 export default async function ShowPage({
@@ -115,6 +117,16 @@ export default async function ShowPage({
               {l.label || l.url}
             </a>
           ))}
+          {show.pressPdf?.asset?.url && (
+            <a
+              href={show.pressPdf.asset.url}
+              className="underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Press PDF
+            </a>
+          )}
         </section>
       )}
     </main>
