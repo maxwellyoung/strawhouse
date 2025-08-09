@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
+import { formatDate } from "@/lib/date";
 
 const SHOW_LIST = groq`*[_type=="show"]|order(start desc){
   _id, title, start, "slug": slug.current
@@ -51,13 +52,11 @@ export default async function ArchivePage() {
                       className="grid grid-cols-[7.5rem_1fr] gap-4 reveal"
                     >
                       <span className="nav-sans text-xs text-muted">
-                        {show.start
-                          ? formatter.format(new Date(show.start))
-                          : ""}
+                        {formatDate(show.start)}
                       </span>
                       <Link
                         href={`/shows/${show.slug}`}
-                        className="underline underline-offset-2"
+                        className="link-underline underline-offset-2"
                       >
                         {show.title}
                       </Link>

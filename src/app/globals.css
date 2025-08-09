@@ -30,6 +30,7 @@
   --text: #000000;
   --text-secondary: #333333;
   --text-muted: #6b6b6b;
+  --baseline: 8px;
   --font-serif:
     var(--font-sentient), ui-serif, Georgia, Cambria, "Times New Roman", Times,
     serif;
@@ -110,7 +111,7 @@ figure:hover img {
 
 /* Minimal prose defaults for PortableText */
 .prose p {
-  margin: 0.75rem 0;
+  margin: calc(var(--baseline) * 1) 0;
   line-height: 1.7;
 }
 .prose a {
@@ -119,7 +120,7 @@ figure:hover img {
 .prose h1,
 .prose h2,
 .prose h3 {
-  margin: 1.25rem 0 0.75rem;
+  margin: calc(var(--baseline) * 2) 0 calc(var(--baseline) * 1);
 }
 
 /* Nav stays sans for clarity */

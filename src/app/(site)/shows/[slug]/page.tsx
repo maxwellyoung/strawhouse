@@ -1,6 +1,7 @@
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/live";
 import { PortableText } from "@portabletext/react";
+import { formatDateRange } from "@/lib/date";
 
 const SHOW_BY_SLUG = groq`*[_type=="show" && slug.current==$slug][0]{
   _id,
@@ -48,8 +49,7 @@ export default async function ShowPage({
             </p>
           )}
           <p className="nav-sans text-sm text-muted">
-            {show.start?.slice(0, 10)}
-            {show.end ? ` – ${show.end.slice(0, 10)}` : null}
+            {formatDateRange(show.start, show.end)}
           </p>
         </div>
       </header>
